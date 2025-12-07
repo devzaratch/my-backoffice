@@ -6,7 +6,7 @@ const db = require('./config/db');
 
 // สร้างแอป
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
