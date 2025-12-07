@@ -1,0 +1,15 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.table th {
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.85em;
+}
+
+.btn-sm i {
+  font-size: 1.1em;
+}
