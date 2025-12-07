@@ -67,6 +67,6 @@ app.get('/dashboard', (req, res) => {
 });
 
 // เริ่มเซิร์ฟเวอร์
-app.listen(port, 'localhost', () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Backoffice พร้อมใช้งานที่ http://localhost:${port}`);
 });
