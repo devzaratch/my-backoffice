@@ -4,14 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const userList = document.getElementById('userList');
   const userCount = document.getElementById('userCount');
 
-  // ฟังก์ชันโหลดข้อมูล
   const loadUsers = async (params = {}) => {
     try {
       const url = new URL('/users/api/users', window.location.origin);
       Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
 
       const res = await fetch(url);
-      const users = await res.json();
+      const data = await res.json();
+      const users = Array.isArray(data) ? data : []; // แก้ตรงนี้!
 
       userCount.textContent = `${users.length} รายการ`;
 
@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // ฟังก์ชันระบุ class สี
   const getStatusClass = (status) => {
     return status === 'APPROVED' ? 'bg-success' : 
            status === 'PENDING' ? 'bg-warning text-dark' : 'bg-danger';
@@ -61,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
            status === 'PENDING' ? 'รออนุมัติ' : 'ปฏิเสธ';
   };
 
-  // ฟังก์ชันอัปเดตสถานะ
   const updateStatus = async (id, status) => {
     try {
       const res = await fetch('/users/api/update-status', {
@@ -73,14 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.success) {
         loadUsers(getSearchParams());
       } else {
-        alert('❌ ' + data.error);
+        alert('❌ ' + (data.error || 'อัปเดตล้มเหลว'));
       }
     } catch (err) {
       alert('❌ อัปเดตสถานะล้มเหลว');
     }
   };
 
-  // ดึงพารามิเตอร์จาก URL
   const getSearchParams = () => {
     const urlParams = new URLSearchParams(window.location.search);
     return {
@@ -89,10 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   };
 
-  // เริ่มต้นโหลด
   loadUsers(getSearchParams());
 
-  // ฟอร์มค้นหา
   searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(searchForm);
@@ -103,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.search = new URLSearchParams(params).toString();
   });
 
-  // ปุ่มอัปเดตสถานะ
   document.addEventListener('click', (e) => {
     if (e.target.closest('.update-status')) {
       const btn = e.target.closest('.update-status');
@@ -114,7 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-  document.getElementById('exportBtn').addEventListener('click', () =>{
+
+  // Export Excel
+  document.getElementById('exportBtn')?.addEventListener('click', () => {
     const params = getSearchParams();
     const url = new URL('/users/export', window.location.origin);
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));

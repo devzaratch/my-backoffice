@@ -1,15 +1,13 @@
-// config/db.js - สำหรับ PostgreSQL
+// config/db.js
 const { Pool } = require('pg');
 
-// สร้างการเชื่อมต่อ
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // จำเป็นสำหรับ Render.com
+    rejectUnauthorized: false
   }
 });
 
-// ทดสอบการเชื่อมต่อ
 db.connect(err => {
   if (err) {
     console.error('❌ ไม่สามารถเชื่อมต่อ PostgreSQL:', err.message);
