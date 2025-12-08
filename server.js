@@ -2,19 +2,23 @@
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const db = require('./config/db');
 
+// สร้างแอป
 const app = express();
-const port = process.env.PORT || 10000; // ใช้ PORT จาก Render.com
+const port = process.env.PORT || 10000;
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Session (สำหรับระบบ Login)
 app.use(session({
   secret: 'backoffice-secret-key-123',
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 24 * 60 * 60 * 1000 }
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 1 วัน
 }));
 
 // Routes
@@ -29,6 +33,7 @@ app.get('/login', (req, res) => {
 // Route: ตรวจสอบการล็อกอิน
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
+  // ✅ สำหรับ MVP: ใช้ username/password คงที่
   if (username === 'admin' && password === '1234') {
     req.session.user = { id: 1, username: 'admin', role: 'admin' };
     return res.redirect('/');
@@ -47,15 +52,13 @@ app.get('/logout', (req, res) => {
   res.redirect('/login');
 });
 
-// Route: หน้าหลัก
+// Route: หน้าหลัก (ต้องล็อกอินก่อน)
 app.get('/', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
   }
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
-
-// Route: Dashboard
 app.get('/dashboard', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -64,6 +67,6 @@ app.get('/dashboard', (req, res) => {
 });
 
 // เริ่มเซิร์ฟเวอร์
-app.listen(port, '0.0.0.0', () => { // สำคัญมาก: 0.0.0.0
+app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Backoffice พร้อมใช้งานที่ http://localhost:${port}`);
 });
